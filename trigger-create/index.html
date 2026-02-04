@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GCP Trigger Portal</title>
+    <style>
+        body { font-family: sans-serif; padding: 50px; text-align: center; }
+        select, button { padding: 10px; font-size: 16px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Select Trigger to Run</h1>
+    <select id="triggerDropdown"><option>Loading...</option></select>
+    <br>
+    <button onclick="executeTrigger()">Launch Build</button>
+
+    <script>
+        const API_URL = "REPLACE_WITH_YOUR_FUNCTION_URL";
+
+        // Load triggers on page open
+        fetch(API_URL).then(r => r.json()).then(data => {
+            const dropdown = document.getElementById('triggerDropdown');
+            dropdown.innerHTML = data.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+        });
+
+        async function executeTrigger() {
+            const id = document.getElementById('triggerDropdown').value;
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ triggerId: id })
+            });
+            alert(await response.text());
+        }
+    </script>
+</body>
+</html>
